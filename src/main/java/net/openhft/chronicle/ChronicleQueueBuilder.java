@@ -114,6 +114,7 @@ public abstract class ChronicleQueueBuilder implements Cloneable {
         private int dataBlockSize;
         private int messageCapacity;
         private int indexBlockSize;
+        private boolean readOnly;
 
         private FileLifecycleListener fileLifecycleListener = FileLifecycleListener.FileLifecycleListeners.IGNORE;
 
@@ -133,6 +134,16 @@ public abstract class ChronicleQueueBuilder implements Cloneable {
             this.dataBlockSize = Jvm.is64Bit() ? 128 * 1024 * 1024 : 16 * 1024 * 1024;
             this.indexBlockSize = Math.max(4096, this.dataBlockSize / 4);
             this.messageCapacity = 128 * 1024;
+            this.readOnly = false;
+        }
+
+        public boolean isReadOnly() {
+            return readOnly;
+        }
+
+        public IndexedChronicleQueueBuilder setReadOnly(boolean readOnly) {
+            this.readOnly = readOnly;
+            return this;
         }
 
         protected File path() {

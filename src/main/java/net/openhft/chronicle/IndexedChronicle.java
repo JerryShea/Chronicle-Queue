@@ -86,12 +86,18 @@ public class IndexedChronicle implements Chronicle {
             parentFile.mkdirs();
         }
 
-        this.indexFileCache = VanillaMappedBlocks.readWrite(new File(basePath + ".index"),
-                builder.indexBlockSize(), builder.fileLifecycleListener());
-        this.dataFileCache = VanillaMappedBlocks.readWrite(new File(basePath + ".data"),
-                builder.dataBlockSize(), builder.fileLifecycleListener());
+        this.indexFileCache = vanillaMappedBlocks(builder, new File(basePath + ".index"), builder.indexBlockSize());
+        this.dataFileCache = vanillaMappedBlocks(builder, new File(basePath + ".data"), builder.dataBlockSize());
 
         findTheLastIndex();
+    }
+
+    private VanillaMappedBlocks vanillaMappedBlocks(ChronicleQueueBuilder.IndexedChronicleQueueBuilder builder, File file, int indexBlockSize) throws IOException {
+        if (builder.isReadOnly()) {
+            return VanillaMappedBlocks.readOnly(file, indexBlockSize, builder.fileLifecycleListener());
+        } else {
+            return VanillaMappedBlocks.readWrite(file, indexBlockSize, builder.fileLifecycleListener());
+        }
     }
 
     /**
